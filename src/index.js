@@ -16,6 +16,19 @@ export default class Gantt {
         this.setup_tasks(tasks);
         this.change_view_mode();
         this.bind_events();
+
+        // CUSTOM CODE: Initialize centered at today without animation
+        // TODO: Maybe this should be in a function or in options
+        const units_since_first_task = date_utils.diff(
+            new Date(),
+            this.gantt_start,
+            this.config.unit,
+        );
+        const scroll_pos =
+            (units_since_first_task / this.config.step) *
+            this.config.column_width;
+        const container_width = this.$container.clientWidth;
+        this.$container.scrollLeft = scroll_pos - container_width / 2;
     }
 
     setup_wrapper(element) {
@@ -930,6 +943,13 @@ export default class Gantt {
 
         this.$container.scrollTo({
             left: scroll_pos - this.config.column_width / 6,
+            behavior: 'smooth',
+        });
+
+        // CUSTOM CODE: Position the scroll_to to the center
+        const container_width = this.$container.clientWidth;
+        this.$container.scrollTo({
+            left: scroll_pos - container_width / 2,
             behavior: 'smooth',
         });
 
