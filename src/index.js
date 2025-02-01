@@ -17,18 +17,10 @@ export default class Gantt {
         this.change_view_mode();
         this.bind_events();
 
-        // CUSTOM CODE: Initialize centered at today without animation
-        // TODO: Maybe this should be in a function or in options
-        const units_since_first_task = date_utils.diff(
-            new Date(),
-            this.gantt_start,
-            this.config.unit,
-        );
-        const scroll_pos =
-            (units_since_first_task / this.config.step) *
-            this.config.column_width;
-        const container_width = this.$container.clientWidth;
-        this.$container.scrollLeft = scroll_pos - container_width / 2;
+        // Move initialization logic into a separate method
+        if (this.options.center_on_today) {
+            this.center_on_today();
+        }
     }
 
     setup_wrapper(element) {
@@ -941,17 +933,18 @@ export default class Gantt {
             (units_since_first_task / this.config.step) *
             this.config.column_width;
 
-        this.$container.scrollTo({
-            left: scroll_pos - this.config.column_width / 6,
-            behavior: 'smooth',
-        });
-
-        // CUSTOM CODE: Position the scroll_to to the center
-        const container_width = this.$container.clientWidth;
-        this.$container.scrollTo({
-            left: scroll_pos - container_width / 2,
-            behavior: 'smooth',
-        });
+        if (this.options.center_on_scroll) {
+            const container_width = this.$container.clientWidth;
+            this.$container.scrollTo({
+                left: scroll_pos - container_width / 2,
+                behavior: this.options.scroll_behavior,
+            });
+        } else {
+            this.$container.scrollTo({
+                left: scroll_pos - this.config.column_width / 6,
+                behavior: this.options.scroll_behavior,
+            });
+        }
 
         // Calculate current scroll position's upper text
         if (this.$current) {
@@ -1578,6 +1571,19 @@ export default class Gantt {
         this.$current_highlight?.remove?.();
         this.$extras?.remove?.();
         this.popup?.hide?.();
+    }
+
+    center_on_today() {
+        const units_since_first_task = date_utils.diff(
+            new Date(),
+            this.gantt_start,
+            this.config.unit,
+        );
+        const scroll_pos =
+            (units_since_first_task / this.config.step) *
+            this.config.column_width;
+        const container_width = this.$container.clientWidth;
+        this.$container.scrollLeft = scroll_pos - container_width / 2;
     }
 }
 
