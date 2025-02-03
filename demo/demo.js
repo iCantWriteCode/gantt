@@ -7,13 +7,15 @@ const tasks = [
         name: 'Project Planning',
         start: getDate(-3),
         end: getDate(3),
+        row: 0, // First row
     },
     {
         id: 'task2',
         name: 'Design Phase',
-        start: getDate(2),
+        start: getDate(4),
         end: getDate(7),
         dependencies: 'task1',
+        row: 0, // First row
     },
     {
         id: 'task3',
@@ -21,12 +23,14 @@ const tasks = [
         start: getDate(6),
         end: getDate(12),
         dependencies: 'task2',
+        row: 4, // First row
     },
 ];
 
 // Initialize gantt
 new Gantt('#gantt', tasks, {
     infinite_padding: false,
+    move_dependencies: false,
 });
 
 // Helper function to get date for tasks

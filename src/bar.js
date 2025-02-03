@@ -584,10 +584,12 @@ export default class Bar {
     }
 
     compute_y() {
+        const rowIndex =
+            this.task.row !== undefined ? this.task.row : this.task._index;
         this.y =
             this.gantt.config.header_height +
             this.gantt.options.padding / 2 +
-            this.task._index * (this.height + this.gantt.options.padding);
+            rowIndex * (this.height + this.gantt.options.padding);
     }
 
     compute_duration() {

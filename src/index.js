@@ -400,11 +400,16 @@ export default class Gantt {
 
     make_grid_background() {
         const grid_width = this.dates.length * this.config.column_width;
+
+        // Calculate max row instead of using task length
+        const maxRow = Math.max(
+            ...this.tasks.map((t) => (t.row !== undefined ? t.row : t._index)),
+        );
         const grid_height = Math.max(
             this.config.header_height +
                 this.options.padding +
                 (this.options.bar_height + this.options.padding) *
-                    this.tasks.length -
+                    (maxRow + 1) -
                 10,
             this.options.container_height !== 'auto'
                 ? this.options.container_height
