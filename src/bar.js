@@ -401,12 +401,18 @@ export default class Bar {
         const bar = this.$bar;
 
         if (x) {
-            const xs = this.task.dependencies.map((dep) => {
-                return this.gantt.get_bar(dep).$bar.getX();
-            });
-            const valid_x = xs.reduce((prev, curr) => {
-                return prev && x >= curr;
-            }, true);
+            // Only check dependencies if tasks are in the same row
+            const valid_x = this.task.dependencies
+                .map((dep) => {
+                    const parent_task = this.gantt.get_task(dep);
+                    if (parent_task.row === this.task.row) {
+                        return this.gantt.get_bar(dep).$bar.getX();
+                    }
+                    return -Infinity; // Allow movement before parent if in different row
+                })
+                .reduce((prev, curr) => {
+                    return prev && x >= curr;
+                }, true);
             if (!valid_x) return;
             this.update_attr(bar, 'x', x);
             this.x = x;

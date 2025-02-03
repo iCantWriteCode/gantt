@@ -1,13 +1,12 @@
 import Gantt from '/src/index.js';
 
-// Initial tasks
 const tasks = [
     {
         id: 'task1',
         name: 'Project Planning',
         start: getDate(-3),
         end: getDate(3),
-        row: 0, // First row
+        row: 0,
     },
     {
         id: 'task2',
@@ -15,7 +14,7 @@ const tasks = [
         start: getDate(4),
         end: getDate(7),
         dependencies: 'task1',
-        row: 0, // First row
+        row: 0,
     },
     {
         id: 'task3',
@@ -23,7 +22,14 @@ const tasks = [
         start: getDate(6),
         end: getDate(12),
         dependencies: 'task2',
-        row: 4, // First row
+        row: 4,
+    },
+    {
+        id: 'task4',
+        name: 'Testing',
+        start: getDate(8),
+        end: getDate(10),
+        row: 0, // Sharing row 0 with task1 and task2
     },
 ];
 
