@@ -397,7 +397,7 @@ export default class Bar {
         });
     }
 
-    update_bar_position({ x = null, width = null }) {
+    update_bar_position({ x = null, y = null, width = null }) {
         const bar = this.$bar;
 
         if (x) {
@@ -418,22 +418,25 @@ export default class Bar {
             this.x = x;
             this.$date_highlight.style.left = x + 'px';
         }
+
+        if (y !== null) {
+            this.update_attr(bar, 'y', y);
+            this.y = y;
+        }
+
         if (width > 0) {
             this.update_attr(bar, 'width', width);
             this.$date_highlight.style.width = width + 'px';
         }
 
+        // Update positions of other elements
         this.update_label_position();
         this.update_handle_position();
-        this.date_changed();
-        this.compute_duration();
-
-        if (this.gantt.options.show_expected_progress) {
-            this.update_expected_progressbar_position();
-        }
-
         this.update_progressbar_position();
         this.update_arrow_position();
+
+        this.date_changed();
+        this.compute_duration();
     }
 
     update_label_position_on_horizontal_scroll({ x, sx }) {
@@ -671,6 +674,9 @@ export default class Bar {
             label = this.group.querySelector('.bar-label'),
             img = this.group.querySelector('.bar-img');
 
+        // Update vertical position
+        label.setAttribute('y', bar.getY() + this.height / 2);
+
         let padding = 5;
         let x_offset_label_img = this.image_size + 10;
         const labelWidth = label.getBBox().width;
@@ -679,7 +685,9 @@ export default class Bar {
             label.classList.add('big');
             if (img) {
                 img.setAttribute('x', bar.getEndX() + padding);
+                img.setAttribute('y', bar.getY() + padding); // Update img Y position
                 img_mask.setAttribute('x', bar.getEndX() + padding);
+                img_mask.setAttribute('y', bar.getY() + padding); // Update mask Y position
                 label.setAttribute('x', bar.getEndX() + x_offset_label_img);
             } else {
                 label.setAttribute('x', bar.getEndX() + padding);
@@ -688,7 +696,9 @@ export default class Bar {
             label.classList.remove('big');
             if (img) {
                 img.setAttribute('x', bar.getX() + padding);
+                img.setAttribute('y', bar.getY() + padding); // Update img Y position
                 img_mask.setAttribute('x', bar.getX() + padding);
+                img_mask.setAttribute('y', bar.getY() + padding); // Update mask Y position
                 label.setAttribute(
                     'x',
                     bar.getX() + barWidth / 2 + x_offset_label_img,

@@ -1108,6 +1108,7 @@ export default class Gantt {
 
         let pos = 0;
         $.on(this.$svg, 'mousemove', '.bar-wrapper, .handle', (e) => {
+            console.log('mousemove');
             if (
                 this.bar_being_dragged === false &&
                 Math.abs((e.offsetX || e.layerX) - pos) > 10
@@ -1116,6 +1117,7 @@ export default class Gantt {
         });
 
         $.on(this.$svg, 'mousedown', '.bar-wrapper, .handle', (e, element) => {
+            console.log('mousedown');
             const bar_wrapper = $.closest('.bar-wrapper', element);
             if (element.classList.contains('left')) {
                 is_resizing_left = true;
@@ -1296,11 +1298,19 @@ export default class Gantt {
         $.on(this.$svg, 'mousemove', (e) => {
             if (!action_in_progress()) return;
             const dx = (e.offsetX || e.layerX) - x_on_start;
+            const dy = (e.offsetY || e.layerY) - y_on_start;
+
+            // Calculate row based on vertical position
+            const row_height = this.options.bar_height + this.options.padding;
+            const new_row = Math.floor(
+                (e.offsetY - this.config.header_height) / row_height,
+            );
 
             bars.forEach((bar) => {
                 const $bar = bar.$bar;
                 $bar.finaldx = this.get_snap_position(dx, $bar.ox);
                 this.hide_popup();
+
                 if (is_resizing_left) {
                     if (parent_bar_id === bar.task.id) {
                         bar.update_bar_position({
@@ -1323,12 +1333,22 @@ export default class Gantt {
                     !this.options.readonly &&
                     !this.options.readonly_dates
                 ) {
-                    bar.update_bar_position({ x: $bar.ox + $bar.finaldx });
+                    // Update both horizontal and vertical position
+                    if (new_row >= 0) {
+                        bar.task.row = new_row;
+                        bar.compute_y();
+                        bar.update_bar_position({
+                            x: $bar.ox + $bar.finaldx,
+                            y: bar.y,
+                        });
+                    }
                 }
             });
         });
 
         document.addEventListener('mouseup', () => {
+            console.log('mouseup');
+
             is_dragging = false;
             is_resizing_left = false;
             is_resizing_right = false;
@@ -1338,6 +1358,7 @@ export default class Gantt {
         });
 
         $.on(this.$svg, 'mouseup', (e) => {
+            console.log('mouseup');
             this.bar_being_dragged = null;
             bars.forEach((bar) => {
                 const $bar = bar.$bar;
