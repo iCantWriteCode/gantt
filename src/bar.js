@@ -715,14 +715,25 @@ export default class Bar {
     update_handle_position() {
         if (this.invalid || this.gantt.options.readonly) return;
         const bar = this.$bar;
-        this.handle_group
-            .querySelector('.handle.left')
-            .setAttribute('x', bar.getX());
-        this.handle_group
-            .querySelector('.handle.right')
-            .setAttribute('x', bar.getEndX());
-        const handle = this.group.querySelector('.handle.progress');
-        handle && handle.setAttribute('cx', this.$bar_progress.getEndX());
+
+        const left_handle = this.handle_group.querySelector('.handle.left');
+        const right_handle = this.handle_group.querySelector('.handle.right');
+        const progress_handle =
+            this.handle_group.querySelector('.handle.progress');
+
+        // Update x positions
+        left_handle?.setAttribute('x', bar.getX());
+        right_handle?.setAttribute('x', bar.getEndX());
+
+        // Update y positions
+        const handleY = bar.getY() + this.height / 4;
+        left_handle?.setAttribute('y', handleY);
+        right_handle?.setAttribute('y', handleY);
+
+        if (progress_handle) {
+            progress_handle.setAttribute('cx', this.$bar_progress.getEndX());
+            progress_handle.setAttribute('cy', bar.getY() + this.height / 2);
+        }
     }
 
     update_arrow_position() {

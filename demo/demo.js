@@ -37,6 +37,18 @@ const tasks = [
 new Gantt('#gantt', tasks, {
     infinite_padding: false,
     move_dependencies: false,
+    readonly_progress: true,
+    on_click: (task) => console.log('Task clicked:', task),
+    on_date_change: (task, start, end) => console.log('Date changed'),
+    on_progress_change: (task, progress) => console.log('Progress:', progress),
+    on_view_change: (mode) => console.log('View mode:', mode),
+    on_double_click: (task) => console.log('Double clicked:', task.name),
+    // on_hover: (task, x, y, event) => console.log('Task hover:', task.name),
+    on_row_change: (task, old_row, new_row) => {
+        console.log(
+            `Task ${task.name} moved from row ${old_row} to ${new_row}`,
+        );
+    },
 });
 
 // Helper function to get date for tasks
